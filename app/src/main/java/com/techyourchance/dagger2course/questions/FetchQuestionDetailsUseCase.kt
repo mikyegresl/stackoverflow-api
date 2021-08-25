@@ -8,17 +8,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.CancellationException
 
-class FetchQuestionDetailsUseCase() {
+class FetchQuestionDetailsUseCase(private val stackoverflowApi: StackoverflowApi) {
     sealed class Result {
         class Success(val question: QuestionWithBody) : Result()
         object Failure: Result()
     }
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(Constants.BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val stackoverflowApi = retrofit.create(StackoverflowApi::class.java)
 
     suspend fun fetchQuestionDetails(questionId : String): Result {
         return withContext(Dispatchers.IO) {
