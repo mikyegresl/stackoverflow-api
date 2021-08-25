@@ -9,6 +9,7 @@ import com.techyourchance.dagger2course.networking.StackoverflowApi
 import com.techyourchance.dagger2course.questions.FetchQuestionsUseCase
 import com.techyourchance.dagger2course.questions.Question
 import com.techyourchance.dagger2course.screens.common.ScreensNavigator
+import com.techyourchance.dagger2course.screens.common.activities.BaseActivity
 import com.techyourchance.dagger2course.screens.common.dialogs.DialogsNavigator
 import com.techyourchance.dagger2course.screens.common.dialogs.ServerErrorDialogFragment
 import com.techyourchance.dagger2course.screens.questiondetails.QuestionDetailsActivity
@@ -17,7 +18,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
-class QuestionsListActivity : AppCompatActivity(), QuestionListViewMvc.Listener {
+class QuestionsListActivity : BaseActivity(), QuestionListViewMvc.Listener {
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private lateinit var fetchQuestionsUseCase: FetchQuestionsUseCase
@@ -33,7 +34,7 @@ class QuestionsListActivity : AppCompatActivity(), QuestionListViewMvc.Listener 
         viewMvc = QuestionListViewMvc(LayoutInflater.from(this), null)
         setContentView(viewMvc.rootView)
 
-        fetchQuestionsUseCase = FetchQuestionsUseCase((application as MyApplication).stackOverflowApi)
+        fetchQuestionsUseCase = appCompositionRoot.fetchQuestionsUseCase
 
         dialogsNavigator = DialogsNavigator(supportFragmentManager)
 
