@@ -20,29 +20,6 @@ class QuestionListViewMvc(
     viewGroup,
     R.layout.layout_questions_list
 ) {
-    private val swipeRefreshLayout: SwipeRefreshLayout
-    private val recyclerView: RecyclerView
-    private val questionsAdapter: QuestionsAdapter
-
-    init {
-        swipeRefreshLayout = findViewById(R.id.swipeRefresh)
-        recyclerView = findViewById(R.id.recycler)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        questionsAdapter = QuestionsAdapter { clickedQuestion ->
-            for (listener in listeners) {
-                listener.onQuestionClicked(clickedQuestion)
-            }
-        }
-        recyclerView.adapter = questionsAdapter
-
-        swipeRefreshLayout.setOnRefreshListener {
-            for (listener in listeners) {
-                listener.onRefreshClicked()
-            }
-        }
-    }
-
     interface Listener {
         fun onRefreshClicked()
         fun onQuestionClicked(clickedQuestion: Question)
@@ -78,6 +55,29 @@ class QuestionListViewMvc(
 
         override fun getItemCount(): Int {
             return questionsList.size
+        }
+    }
+
+    private val swipeRefreshLayout: SwipeRefreshLayout
+    private val recyclerView: RecyclerView
+    private val questionsAdapter: QuestionsAdapter
+
+    init {
+        swipeRefreshLayout = findViewById(R.id.swipeRefresh)
+        recyclerView = findViewById(R.id.recycler)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        questionsAdapter = QuestionsAdapter { clickedQuestion ->
+            for (listener in listeners) {
+                listener.onQuestionClicked(clickedQuestion)
+            }
+        }
+        recyclerView.adapter = questionsAdapter
+
+        swipeRefreshLayout.setOnRefreshListener {
+            for (listener in listeners) {
+                listener.onRefreshClicked()
+            }
         }
     }
 

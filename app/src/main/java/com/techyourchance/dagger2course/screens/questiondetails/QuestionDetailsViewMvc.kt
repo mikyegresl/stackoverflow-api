@@ -18,6 +18,10 @@ class QuestionDetailsViewMvc(
     viewGroup,
     R.layout.layout_question_details
 ) {
+    interface Listener {
+        fun onBackClicked()
+    }
+
     private val toolbar: MyToolbar
     private val swipeRefresh: SwipeRefreshLayout
     private val txtQuestionBody: TextView
@@ -34,10 +38,6 @@ class QuestionDetailsViewMvc(
 
         swipeRefresh = findViewById(R.id.swipeRefresh)
         swipeRefresh.isEnabled = false
-    }
-
-    interface Listener {
-        fun onBackClicked()
     }
 
     fun setQuestionBody(questionBody: String) {
