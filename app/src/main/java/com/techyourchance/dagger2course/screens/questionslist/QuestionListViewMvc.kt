@@ -1,37 +1,34 @@
 package com.techyourchance.dagger2course.screens.questionslist
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.annotation.IdRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.techyourchance.dagger2course.R
 import com.techyourchance.dagger2course.questions.Question
+import com.techyourchance.dagger2course.screens.common.viewsmvc.BaseViewMvc
 import java.util.ArrayList
 
 class QuestionListViewMvc(
     layoutInflater: LayoutInflater,
     viewGroup: ViewGroup?
+): BaseViewMvc<QuestionListViewMvc.Listener>(
+    layoutInflater,
+    viewGroup,
+    R.layout.layout_questions_list
 ) {
     private val swipeRefreshLayout: SwipeRefreshLayout
     private val recyclerView: RecyclerView
     private val questionsAdapter: QuestionsAdapter
 
-    val rootView: View = layoutInflater.inflate(R.layout.layout_questions_list, viewGroup, false)
-    private val context: Context get() = rootView.context
-    private val listeners = HashSet<Listener>()
-
     init {
-        // init pull-down-to-refresh
         swipeRefreshLayout = findViewById(R.id.swipeRefresh)
-
-        // init recycler view
         recyclerView = findViewById(R.id.recycler)
         recyclerView.layoutManager = LinearLayoutManager(context)
+
         questionsAdapter = QuestionsAdapter { clickedQuestion ->
             for (listener in listeners) {
                 listener.onQuestionClicked(clickedQuestion)
@@ -44,6 +41,11 @@ class QuestionListViewMvc(
                 listener.onRefreshClicked()
             }
         }
+    }
+
+    interface Listener {
+        fun onRefreshClicked()
+        fun onQuestionClicked(clickedQuestion: Question)
     }
 
     class QuestionsAdapter(
@@ -77,20 +79,6 @@ class QuestionListViewMvc(
         override fun getItemCount(): Int {
             return questionsList.size
         }
-
-    }
-
-    interface Listener {
-        fun onRefreshClicked()
-        fun onQuestionClicked(clickedQuestion: Question)
-    }
-
-    fun bindListener(listener: Listener) {
-        listeners.add(listener)
-    }
-
-    fun unbindListener(listener: Listener) {
-        listeners.remove(listener)
     }
 
     fun showProgressIndication() {
@@ -101,10 +89,6 @@ class QuestionListViewMvc(
         if (swipeRefreshLayout.isRefreshing) {
             swipeRefreshLayout.isRefreshing = false
         }
-    }
-
-    private fun <T: View?> findViewById(@IdRes id: Int): T {
-        return rootView.findViewById<T>(id)
     }
 
     fun bindQuestions(questions: List<Question>) {

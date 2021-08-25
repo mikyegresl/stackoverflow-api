@@ -39,7 +39,7 @@ class QuestionsListActivity : AppCompatActivity(), QuestionListViewMvc.Listener 
     override fun onStart() {
         super.onStart()
 
-        viewMvc.bindListener(this)
+        viewMvc.bindListeners(this)
 
         if (!isDataLoaded) {
             fetchQuestions()
@@ -49,7 +49,7 @@ class QuestionsListActivity : AppCompatActivity(), QuestionListViewMvc.Listener 
     override fun onStop() {
         super.onStop()
 
-        viewMvc.unbindListener(this)
+        viewMvc.unbindListeners(this)
         coroutineScope.coroutineContext.cancelChildren()
     }
 

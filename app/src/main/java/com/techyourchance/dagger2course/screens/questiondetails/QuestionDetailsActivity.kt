@@ -15,7 +15,7 @@ import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class QuestionDetailsActivity : AppCompatActivity() {
+class QuestionDetailsActivity : AppCompatActivity(), QuestionDetailsViewMvc.Listener {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -26,10 +26,7 @@ class QuestionDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewMvc = QuestionDetailsViewMvc(
-            LayoutInflater.from(this),
-            null,
-            this)
+        viewMvc = QuestionDetailsViewMvc(LayoutInflater.from(this), null)
         setContentView(viewMvc.rootView)
 
         // init retrofit
@@ -45,11 +42,15 @@ class QuestionDetailsActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        viewMvc.bindListeners(this)
         fetchQuestionDetails()
     }
 
     override fun onStop() {
         super.onStop()
+
+        viewMvc.unbindListeners(this)
         coroutineScope.coroutineContext.cancelChildren()
     }
 
@@ -92,5 +93,9 @@ class QuestionDetailsActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_QUESTION_ID, questionId)
             context.startActivity(intent)
         }
+    }
+
+    override fun onBackClicked() {
+        onBackPressed()
     }
 }
