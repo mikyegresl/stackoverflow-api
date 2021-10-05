@@ -25,49 +25,14 @@ class QuestionListViewMvc(
         fun onQuestionClicked(clickedQuestion: Question)
     }
 
-    class QuestionsAdapter(
-        private val onQuestionClickListener: (Question) -> Unit
-    ) : RecyclerView.Adapter<QuestionsAdapter.QuestionViewHolder>() {
-
-        private var questionsList: List<Question> = ArrayList(0)
-
-        inner class QuestionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val title: TextView = view.findViewById(R.id.txt_title)
-        }
-
-        fun bindData(questions: List<Question>) {
-            questionsList = ArrayList(questions)
-            notifyDataSetChanged()
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QuestionViewHolder {
-            val itemView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.layout_question_list_item, parent, false)
-            return QuestionViewHolder(itemView)
-        }
-
-        override fun onBindViewHolder(holder: QuestionViewHolder, position: Int) {
-            holder.title.text = questionsList[position].title
-            holder.itemView.setOnClickListener {
-                onQuestionClickListener.invoke(questionsList[position])
-            }
-        }
-
-        override fun getItemCount(): Int {
-            return questionsList.size
-        }
-    }
-
-    private val swipeRefreshLayout: SwipeRefreshLayout
-    private val recyclerView: RecyclerView
-    private val questionsAdapter: QuestionsAdapter
+    private val swipeRefreshLayout: SwipeRefreshLayout = findViewById(R.id.swipeRefresh)
+    private val recyclerView: RecyclerView = findViewById(R.id.recycler)
+    private val questionsAdapter: QuestionListAdapter
 
     init {
-        swipeRefreshLayout = findViewById(R.id.swipeRefresh)
-        recyclerView = findViewById(R.id.recycler)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        questionsAdapter = QuestionsAdapter { clickedQuestion ->
+        questionsAdapter = QuestionListAdapter { clickedQuestion ->
             for (listener in listeners) {
                 listener.onQuestionClicked(clickedQuestion)
             }

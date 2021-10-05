@@ -7,29 +7,30 @@ import com.mikyegresl.stackoverflow.questions.FetchQuestionDetailsUseCase
 import com.mikyegresl.stackoverflow.screens.common.ScreensNavigator
 import com.mikyegresl.stackoverflow.screens.common.activities.BaseActivity
 import com.mikyegresl.stackoverflow.screens.common.dialogs.DialogsNavigator
+import com.mikyegresl.stackoverflow.screens.common.viewsmvc.ViewMvcFactory
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 class QuestionDetailsActivity : BaseActivity(), QuestionDetailsViewMvc.Listener {
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private lateinit var viewMvc: QuestionDetailsViewMvc
     private lateinit var questionId: String
-    private lateinit var fetchQuestionDetailsUseCase: FetchQuestionDetailsUseCase
-    private lateinit var screenNavigator: ScreensNavigator
-    private lateinit var dialogNavigator: DialogsNavigator
+
+    @Inject lateinit var viewMvcFactory: ViewMvcFactory
+    @Inject lateinit var fetchQuestionDetailsUseCase: FetchQuestionDetailsUseCase
+    @Inject lateinit var screenNavigator: ScreensNavigator
+    @Inject lateinit var dialogNavigator: DialogsNavigator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewMvc = compositionRoot.viewMvcFactory.newQuestionDetailsViewMvc(null)
+        presentationComponent.inject(this)
+
+        viewMvc = viewMvcFactory.newQuestionDetailsViewMvc(null)
         setContentView(viewMvc.rootView)
 
         questionId = intent.extras!!.getString(EXTRA_QUESTION_ID)!!
-
-        fetchQuestionDetailsUseCase = compositionRoot.fetchQuestionDetailsUseCase
-
-        screenNavigator = activityCompositionRoot.screensNavigator
-        dialogNavigator = compositionRoot.dialogNavigator
     }
 
     override fun onStart() {
@@ -55,7 +56,7 @@ class QuestionDetailsActivity : BaseActivity(), QuestionDetailsViewMvc.Listener 
 
                 when (result) {
                     is FetchQuestionDetailsUseCase.Result.Success -> {
-                        viewMvc.setQuestionBody(result.question.body)
+                        viewMvc.setQuestionBody(result.question)
                     }
                     is FetchQuestionDetailsUseCase.Result.Failure -> {
                         onFetchFailed()

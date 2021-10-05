@@ -4,10 +4,11 @@ import com.mikyegresl.stackoverflow.networking.StackoverflowApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.CancellationException
+import javax.inject.Inject
 
-class FetchQuestionDetailsUseCase(private val stackoverflowApi: StackoverflowApi) {
+class FetchQuestionDetailsUseCase @Inject constructor(private val stackoverflowApi: StackoverflowApi) {
     sealed class Result {
-        data class Success(val question: QuestionWithBody) : Result()
+        data class Success(val question: QuestionWithBody): Result()
         object Failure: Result()
     }
 

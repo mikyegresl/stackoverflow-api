@@ -9,32 +9,30 @@ import com.mikyegresl.stackoverflow.questions.Question
 import com.mikyegresl.stackoverflow.screens.common.ScreensNavigator
 import com.mikyegresl.stackoverflow.screens.common.dialogs.DialogsNavigator
 import com.mikyegresl.stackoverflow.screens.common.fragments.BaseFragment
+import com.mikyegresl.stackoverflow.screens.common.viewsmvc.ViewMvcFactory
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 class QuestionListFragment : BaseFragment(), QuestionListViewMvc.Listener {
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
+    @Inject lateinit var fetchQuestionsUseCase: FetchQuestionsUseCase
+    @Inject lateinit var dialogsNavigator: DialogsNavigator
+    @Inject lateinit var screensNavigator: ScreensNavigator
+    @Inject lateinit var viewMvcFactory: ViewMvcFactory
+
     private lateinit var viewMvc: QuestionListViewMvc
-    private lateinit var fetchQuestionsUseCase: FetchQuestionsUseCase
-    private lateinit var dialogsNavigator: DialogsNavigator
-    private lateinit var screensNavigator: ScreensNavigator
 
     private var isDataLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        fetchQuestionsUseCase = compositionRoot.fetchQuestionsUseCase
-        dialogsNavigator = compositionRoot.dialogNavigator
-        screensNavigator = compositionRoot.screensNavigator
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
+        presentationComponent.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        viewMvc = compositionRoot.viewMvcFactory.newQuestionsListViewMvc(container)
+        viewMvc = viewMvcFactory.newQuestionsListViewMvc(container)
         return viewMvc.rootView
     }
 
